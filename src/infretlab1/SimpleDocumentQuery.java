@@ -548,12 +548,12 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
     }//GEN-LAST:event_weightedSearchButtonActionPerformed
 
     private void corpusFileBrowseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_corpusFileBrowseButtonActionPerformed
-        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        int r = chooser.showOpenDialog(this);
+        FILECHOOSER.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        int r = FILECHOOSER.showOpenDialog(this);
         if (r != javax.swing.JFileChooser.APPROVE_OPTION) {
             return;
         }
-        corpusFileTextField.setText(chooser.getSelectedFile().getAbsolutePath());
+        corpusFileTextField.setText(FILECHOOSER.getSelectedFile().getAbsolutePath());
     }//GEN-LAST:event_corpusFileBrowseButtonActionPerformed
 
     /**
@@ -591,6 +591,13 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
         });
     }
     
+    /**
+     * Read and index the file
+     * @param fileString file location string
+     * @param isLowerCased should it lower cased?
+     * @param ignoreStopWords should it filter stopwords?
+     * @param ignorePuctuations should it filter punctuations?
+     */
     private void indexTheFile(String fileString, boolean isLowerCased, boolean ignoreStopWords, boolean ignorePuctuations) {
         // Reset local variable!
         invertedIndex = new HashMap<>();
@@ -600,6 +607,7 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
         numOfToken = 0;
         
         try {
+            // read the file
             BufferedReader br = new BufferedReader(new FileReader(fileString));
             ArrayList<Document> docs = new ArrayList<>();
             
@@ -637,17 +645,31 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Filtering tokens from specified stopwords and puctuations
+     * @param tokens a list of tokens
+     * @param ignoreStopWords should it filter stopwords
+     * @param ignorePuctuations should it filter punctuations
+     * @return an array of filtered tokens
+     */
     private static String[] filterTokens(String[] tokens, boolean ignoreStopWords, boolean ignorePuctuations){
         ArrayList<String> tokenList = new ArrayList<>(Arrays.asList(tokens));
         Set<String> filterSet = new HashSet<>();
-        if(ignorePuctuations) filterSet.addAll(PunctuationsSet);
-        if(ignoreStopWords) filterSet.addAll(StopWordsSet);
+        if(ignorePuctuations) filterSet.addAll(PUNCTUATIONSET);
+        if(ignoreStopWords) filterSet.addAll(STOPWORDSET);
         
         tokenList.removeAll(filterSet);
         
         return tokenList.toArray(new String[0]);
     }
     
+    /**
+     * Simple interface for creating a document object
+     * @param docContent
+     * @param tokens
+     * @param docId
+     * @return 
+     */
     private static Document createDocument(String docContent, String[] tokens, int docId){
         Document d = new Document();
         d.setDocId(docId);
@@ -656,6 +678,11 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
         return d;
     }
 
+    /**
+     * Indexing a document to the Inverted Index
+     * @param tokens array of tokens string of a document
+     * @param docId the document ID
+     */
     private void indexDocument(String[] tokens, int docId){
         for(int i = 0; i < tokens.length; i++){
             String token = tokens[i];
@@ -669,6 +696,9 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Generate the TF-IDF value of all the tokens and documents in the index
+     */
     private void generateTFIDF(){
         // iterate through all the documents on the corpus
         for (Document doc : documents.values()) {
@@ -690,6 +720,9 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
         }
     }
     
+    /**
+     * Update the tokens statistics on the inverted index
+     */
     private void updateTokenStatDisplay(){
         /* UPDATE THE STATISTICS NUMBERS*/
         numOfDocsLabel.setText(String.valueOf(numOfDoc));
@@ -708,25 +741,11 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
         }        
     }
     
-    
-    private static HashSet<Integer> unionSet(Set s1, Set s2){ // OR
-        HashSet<Integer> union = new HashSet<>(s1);
-        union.addAll(s2);
-        return union;
-    }
-
-    private static HashSet<Integer> intersection(Set s1, Set s2){ // AND
-        HashSet<Integer> intersection = new HashSet<>(s1);
-        intersection.retainAll(s2);
-        return intersection;
-    }
-    
-    private static HashSet<Integer> difference(Set s1, Set s2){ // NOT
-        HashSet<Integer> difference = new HashSet<>(s1);
-        difference.removeAll(s2);
-        return difference;
-    }
-
+    /**
+     * This function was intended to be used as a full boolean query
+     * @param query
+     * @return a set of documents ID
+     */
     private static Set<Integer> advanceBooleanSearchDocuments(String query){
         String[] queryTokens = query.split(" ");
         Set s1 = null;
@@ -755,7 +774,13 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
         return s1;
     }
 
-    
+    /**
+     * Search documents that satisfy the query strings
+     * @param query the query strings
+     * @param isOptimize is the query optimized or not
+     * @param numOfComparisonLabel the label that going to show the number of optimization
+     * @return 
+     */
     private static Set<Integer> booleanSearchDocuments(String query, boolean isOptimize, javax.swing.JLabel numOfComparisonLabel){
         String[] queryTokens;
         
@@ -784,42 +809,10 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
         return s1;
     }
     
-    private static String[] optimizeQueryOrder(String query){
-        String[] queryTokens = query.split(" ");
-        Map<String, Integer> unsortedMap = new HashMap<>();
-        
-        // get each individual query token number of documents result
-        for (String qTok : queryTokens) 
-            unsortedMap.put(qTok, invertedIndex.get(qTok).size());
-        
-        // sort it by the number of document result
-        Map<String, Integer> sortedMap = sortByComparator(unsortedMap);
-        return sortedMap.keySet().toArray(queryTokens);
-    }
-    
-    private static Map<String, Integer> sortByComparator(Map<String, Integer> unsortMap) {
-
-        // Convert Map to List
-        List<Map.Entry<String, Integer>> list
-                = new LinkedList<Map.Entry<String, Integer>>(unsortMap.entrySet());
-
-        // Sort list with comparator, to compare the Map values
-        Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
-            public int compare(Map.Entry<String, Integer> o1,
-                    Map.Entry<String, Integer> o2) {
-                return (o1.getValue()).compareTo(o2.getValue());
-            }
-        });
-
-        // Convert sorted map back to a Map
-        Map<String, Integer> sortedMap = new LinkedHashMap<String, Integer>();
-        for (Iterator<Map.Entry<String, Integer>> it = list.iterator(); it.hasNext();) {
-            Map.Entry<String, Integer> entry = it.next();
-            sortedMap.put(entry.getKey(), entry.getValue());
-        }
-        return sortedMap;
-    }
-    
+    /**
+     * Update the Boolean Query Result Table content
+     * @param resultSet a set of document ID from the query result 
+     */
     private void updateBooleanQueriesResultTable(Set<Integer> resultSet){
         DefaultTableModel dtm = (DefaultTableModel)booleanQueryResultTable.getModel();
         dtm.getDataVector().removeAllElements();
@@ -834,6 +827,13 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Search documents that satisfy the query strings and sort it by weight using cosine similarity
+     * @param query the query strings
+     * @param isOptimize is the query optimized or not
+     * @param numOfComparisonLabel the label that going to show the number of optimization
+     * @return 
+     */
     private static Map<Integer, Double> weightedSearchDocuments(String query, boolean isOptimize, javax.swing.JLabel numOfComparisonLabel){
         
         String[] queryTokens;
@@ -876,10 +876,13 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
         return weightedDocumentQueryResult;
     }
     
+    /**
+     * Calculate the tf-idf value of a query
+     * @param query the query string
+     * @return Query Document Object
+     */
     private static QueryDoc calcQueryTfIdf(String query){
-        // calculate the tf-idf value of the query
-        // tokenize:
-        String[] queryTokens = query.split(" ");
+        String[] queryTokens = query.split(" ");//tokenize:
         Map<String, Integer> queryTFMap = new HashMap<>();
         
         for (String queryToken : queryTokens) {
@@ -895,11 +898,8 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
             double tf = 1d + Math.log(queryTFMap.get(queryToken));
             double tfidf = (tf * (Math.log(documents.size()+1 / invertedIndex.get(queryToken).size()+1)));
 
-            // put the tf-idf value to the document object
-            queryTfidfMap.put(queryToken, tfidf);
-
-            // also calculate the document normalization value for cosine similarity
-            queryNorm += Math.pow(tfidf, 2d);
+            queryTfidfMap.put(queryToken, tfidf);//put the tf-idf value to the document object
+            queryNorm += Math.pow(tfidf, 2d);//also calculate the document normalization value for cosine similarity
         }
         // document norm  (vector length or L2 norm) || d ||
         queryNorm = Math.sqrt(queryNorm); // == square root (sigma(tfidf^2))
@@ -907,6 +907,12 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
         return new QueryDoc(queryNorm, queryTfidfMap);
     }
     
+    /**
+     * Calculate cosine similarity between a query and a document
+     * @param queryDoc
+     * @param doc
+     * @return the cosine similarity between the query and the document
+     */
     private static double calcCosineSim(QueryDoc queryDoc, Document doc){
         // assumption: the number of tokens in a query would be far more less than
         // the number of tokens in a document
@@ -925,6 +931,10 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
         return (similiarity);
     }
     
+    /**
+     * Update the Weighted Query Result Table content
+     * @param resultMap a Map containing the Document ID and the Weight Value of the document
+     */
     private void updateWeigtedQueriesResultTable(Map<Integer, Double> resultMap){
         DefaultTableModel dtm = (DefaultTableModel)weightedQueryResultTable.getModel();
         dtm.getDataVector().removeAllElements();
@@ -937,8 +947,6 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
         
         wQueryResultNum.setText(String.valueOf(resultMap.size()));
     }
-    
-    
     
     private static Map<String, Set<Integer>> invertedIndex = null;
     private static Map<String, Integer> tokenFreq = null;
@@ -956,7 +964,90 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
         }
     }
     
-    public final static String[] symbols = {
+    /**
+     * A function that takes query and optimize it by sorting the query
+     * strings by the number of documents it could find in the inverted index
+     * @param query
+     * @return 
+     */
+    private static String[] optimizeQueryOrder(String query){
+        String[] queryTokens = query.split(" ");
+        Map<String, Integer> unsortedMap = new HashMap<>();
+        
+        // get each individual query token number of documents result
+        for (String qTok : queryTokens) 
+            unsortedMap.put(qTok, invertedIndex.get(qTok).size());
+        
+        // sort it by the number of document result
+        Map<String, Integer> sortedMap = sortByComparator(unsortedMap);
+        return sortedMap.keySet().toArray(queryTokens);
+    }
+    
+    /**
+     * Helper function to sort a map Object
+     * @param unsortMap
+     * @return 
+     */
+    private static Map<String, Integer> sortByComparator(Map<String, Integer> unsortMap) {
+
+        // Convert Map to List
+        List<Map.Entry<String, Integer>> list = new LinkedList<>(unsortMap.entrySet());
+
+        // Sort list with comparator, to compare the Map values
+        Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
+            public int compare(Map.Entry<String, Integer> o1,
+                    Map.Entry<String, Integer> o2) {
+                return (o1.getValue()).compareTo(o2.getValue());
+            }
+        });
+
+        // Convert sorted map back to a Map
+        Map<String, Integer> sortedMap = new LinkedHashMap<String, Integer>();
+        for (Iterator<Map.Entry<String, Integer>> it = list.iterator(); it.hasNext();) {
+            Map.Entry<String, Integer> entry = it.next();
+            sortedMap.put(entry.getKey(), entry.getValue());
+        }
+        return sortedMap;
+    }
+    
+    /**
+     * A helper function that union two set
+     * @param s1
+     * @param s2
+     * @return unioned set
+     */
+    private static HashSet<Integer> unionSet(Set s1, Set s2){ // OR
+        HashSet<Integer> union = new HashSet<>(s1);
+        union.addAll(s2);
+        return union;
+    }
+
+    /**
+     * A helper function that intersect two set
+     * @param s1
+     * @param s2
+     * @return intersected set
+     */
+    private static HashSet<Integer> intersection(Set s1, Set s2){ // AND
+        HashSet<Integer> intersection = new HashSet<>(s1);
+        intersection.retainAll(s2);
+        return intersection;
+    }
+    
+    /**
+     * A helper function that differs two set
+     * @param s1
+     * @param s2
+     * @return differed set
+     */
+    private static HashSet<Integer> difference(Set s1, Set s2){ // NOT
+        HashSet<Integer> difference = new HashSet<>(s1);
+        difference.removeAll(s2);
+        return difference;
+    }
+
+    public static final String STOPWORDS = "you i the to s a it t and i'";
+    public final static String[] SYMBOLS = {
         "\'", "-", ".", "@", "#",
         "!", "\"", "$", "%", "&",
         "(", ")", "*", "+", ",",
@@ -965,11 +1056,9 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
         "^", "_", "`", "{", "|",
         "}", "~", "—"
     };
-    public static final Set<String> PunctuationsSet = new HashSet<String>(Arrays.asList(symbols));
-    public static final String StopWords = "you i the to s a it t and i'";
-    public static final Set<String> StopWordsSet = new HashSet<String>(Arrays.asList(StopWords.split(" ")));
-    
-    private JFileChooser chooser = new JFileChooser();
+    public static final Set<String> PUNCTUATIONSET = new HashSet<>(Arrays.asList(SYMBOLS));
+    public static final Set<String> STOPWORDSET = new HashSet<>(Arrays.asList(STOPWORDS.split(" ")));
+    private static final JFileChooser FILECHOOSER = new JFileChooser();
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel AuthorLabel;
