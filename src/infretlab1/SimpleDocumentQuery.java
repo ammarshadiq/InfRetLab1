@@ -1,13 +1,30 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the  "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ * @author : Ammar Shadiq, Filip Antomonov
+ * Information Retrieval Lab 1: Inverted Index, Boolean Query, Weighted Query
+ * Uppsala University, April 2016
  */
 package infretlab1;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -66,29 +83,33 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
         booleanQueryPanel = new javax.swing.JPanel();
         booleanQueriesTextField = new javax.swing.JTextField();
         booleanSearchButton = new javax.swing.JButton();
-        jScrollPane2 = new javax.swing.JScrollPane();
+        booleanQueryScrollPane = new javax.swing.JScrollPane();
         booleanQueryResultTable = new javax.swing.JTable();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
-        jCheckBox1 = new javax.swing.JCheckBox();
+        bQueryResultLabel = new javax.swing.JLabel();
+        bQueryResultNum = new javax.swing.JLabel();
+        bQueryCompLabel = new javax.swing.JLabel();
+        bQueryCompNum = new javax.swing.JLabel();
+        optimizeQueryBooleanCheckBox = new javax.swing.JCheckBox();
         weightedQueryPanel = new javax.swing.JPanel();
         weightedQueryTextField = new javax.swing.JTextField();
         weightedSearchButton = new javax.swing.JButton();
-        jScrollPane3 = new javax.swing.JScrollPane();
+        weightedQueryScrollPane = new javax.swing.JScrollPane();
         weightedQueryResultTable = new javax.swing.JTable();
-        jLabel8 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
-        jLabel11 = new javax.swing.JLabel();
-        jCheckBox2 = new javax.swing.JCheckBox();
+        wQueryResultLabel = new javax.swing.JLabel();
+        wQueryResultNum = new javax.swing.JLabel();
+        wQueryCompLabel = new javax.swing.JLabel();
+        wQueryCompNum = new javax.swing.JLabel();
+        optimizeQueryWeightedCheckBox = new javax.swing.JCheckBox();
         aboutPanel = new javax.swing.JPanel();
-        jLabel12 = new javax.swing.JLabel();
-        jLabel13 = new javax.swing.JLabel();
-        jLabel14 = new javax.swing.JLabel();
+        AuthorLabel = new javax.swing.JLabel();
+        courseLabel = new javax.swing.JLabel();
+        labIdLabel = new javax.swing.JLabel();
+        lowerCaseCheckBox = new javax.swing.JCheckBox();
+        ignorePunctCheckBox = new javax.swing.JCheckBox();
+        ignoreStopCheckBox = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("IR Lab 1 - Uppsala Univ");
 
         corpusFileBrowseButton.setText("Browse");
         corpusFileBrowseButton.addActionListener(new java.awt.event.ActionListener() {
@@ -170,7 +191,7 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
             .addGroup(TokenStatPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(TokenStatPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 547, Short.MAX_VALUE)
                     .addGroup(TokenStatPanelLayout.createSequentialGroup()
                         .addGroup(TokenStatPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(TokenStatPanelLayout.createSequentialGroup()
@@ -204,7 +225,7 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
                     .addComponent(numOfUniqTokStaticLabel)
                     .addComponent(numOfUniqTokensLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 420, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 385, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -237,22 +258,22 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
             }
         });
         booleanQueryResultTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_LAST_COLUMN);
-        jScrollPane2.setViewportView(booleanQueryResultTable);
+        booleanQueryScrollPane.setViewportView(booleanQueryResultTable);
         if (booleanQueryResultTable.getColumnModel().getColumnCount() > 0) {
             booleanQueryResultTable.getColumnModel().getColumn(0).setMinWidth(70);
             booleanQueryResultTable.getColumnModel().getColumn(0).setPreferredWidth(70);
             booleanQueryResultTable.getColumnModel().getColumn(0).setMaxWidth(150);
         }
 
-        jLabel4.setText("Result:");
+        bQueryResultLabel.setText("Result:");
 
-        jLabel5.setText("0");
+        bQueryResultNum.setText("0");
 
-        jLabel6.setText("# Comparison:");
+        bQueryCompLabel.setText("# Comparison:");
 
-        jLabel7.setText("0");
+        bQueryCompNum.setText("0");
 
-        jCheckBox1.setText("Optimize Comparison");
+        optimizeQueryBooleanCheckBox.setText("Optimize Comparison");
 
         javax.swing.GroupLayout booleanQueryPanelLayout = new javax.swing.GroupLayout(booleanQueryPanel);
         booleanQueryPanel.setLayout(booleanQueryPanelLayout);
@@ -261,21 +282,21 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
             .addGroup(booleanQueryPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(booleanQueryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)
+                    .addComponent(booleanQueryScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 547, Short.MAX_VALUE)
                     .addGroup(booleanQueryPanelLayout.createSequentialGroup()
                         .addComponent(booleanQueriesTextField)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(booleanSearchButton))
                     .addGroup(booleanQueryPanelLayout.createSequentialGroup()
-                        .addComponent(jLabel4)
+                        .addComponent(bQueryResultLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(bQueryResultNum, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel6)
+                        .addComponent(bQueryCompLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(bQueryCompNum, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jCheckBox1)))
+                        .addComponent(optimizeQueryBooleanCheckBox)))
                 .addContainerGap())
         );
         booleanQueryPanelLayout.setVerticalGroup(
@@ -287,13 +308,13 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
                     .addComponent(booleanSearchButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(booleanQueryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(jLabel5)
-                    .addComponent(jLabel6)
-                    .addComponent(jLabel7)
-                    .addComponent(jCheckBox1))
+                    .addComponent(bQueryResultLabel)
+                    .addComponent(bQueryResultNum)
+                    .addComponent(bQueryCompLabel)
+                    .addComponent(bQueryCompNum)
+                    .addComponent(optimizeQueryBooleanCheckBox))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 424, Short.MAX_VALUE)
+                .addComponent(booleanQueryScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 389, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -352,7 +373,7 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
 
         table3Sorter.setSortKeys(table3SortKeys);
         table3Sorter.sort();
-        jScrollPane3.setViewportView(weightedQueryResultTable);
+        weightedQueryScrollPane.setViewportView(weightedQueryResultTable);
         if (weightedQueryResultTable.getColumnModel().getColumnCount() > 0) {
             weightedQueryResultTable.getColumnModel().getColumn(0).setMinWidth(10);
             weightedQueryResultTable.getColumnModel().getColumn(0).setPreferredWidth(50);
@@ -365,15 +386,15 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
             weightedQueryResultTable.getColumnModel().getColumn(3).setMaxWidth(150);
         }
 
-        jLabel8.setText("Result:");
+        wQueryResultLabel.setText("Result:");
 
-        jLabel9.setText("0");
+        wQueryResultNum.setText("0");
 
-        jLabel10.setText("# Comparison:");
+        wQueryCompLabel.setText("# Comparison:");
 
-        jLabel11.setText("0");
+        wQueryCompNum.setText("0");
 
-        jCheckBox2.setText("Optimize Comparison");
+        optimizeQueryWeightedCheckBox.setText("Optimize Comparison");
 
         javax.swing.GroupLayout weightedQueryPanelLayout = new javax.swing.GroupLayout(weightedQueryPanel);
         weightedQueryPanel.setLayout(weightedQueryPanelLayout);
@@ -382,21 +403,21 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
             .addGroup(weightedQueryPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(weightedQueryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)
+                    .addComponent(weightedQueryScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 547, Short.MAX_VALUE)
                     .addGroup(weightedQueryPanelLayout.createSequentialGroup()
                         .addComponent(weightedQueryTextField)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(weightedSearchButton))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, weightedQueryPanelLayout.createSequentialGroup()
-                        .addComponent(jLabel8)
+                        .addComponent(wQueryResultLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(wQueryResultNum, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel10)
+                        .addComponent(wQueryCompLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(wQueryCompNum, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jCheckBox2)))
+                        .addComponent(optimizeQueryWeightedCheckBox)))
                 .addContainerGap())
         );
         weightedQueryPanelLayout.setVerticalGroup(
@@ -408,23 +429,23 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
                     .addComponent(weightedSearchButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(weightedQueryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel8)
-                    .addComponent(jLabel9)
-                    .addComponent(jLabel10)
-                    .addComponent(jLabel11)
-                    .addComponent(jCheckBox2))
+                    .addComponent(wQueryResultLabel)
+                    .addComponent(wQueryResultNum)
+                    .addComponent(wQueryCompLabel)
+                    .addComponent(wQueryCompNum)
+                    .addComponent(optimizeQueryWeightedCheckBox))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 424, Short.MAX_VALUE)
+                .addComponent(weightedQueryScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 389, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
         MainTabbedPane.addTab("Weighted Query", weightedQueryPanel);
 
-        jLabel12.setText("Author: Ammar Shadiq, Filip Antomonov");
+        AuthorLabel.setText("Author: Ammar Shadiq, Filip Antomonov");
 
-        jLabel13.setText("Information Retrieval, Uppsala University, April 2016");
+        courseLabel.setText("Information Retrieval, Uppsala University, April 2016");
 
-        jLabel14.setText("Lab 1: Inverted Index, Boolean Query, Weighted Query");
+        labIdLabel.setText("Lab 1: Inverted Index, Boolean Query, Weighted Query");
 
         javax.swing.GroupLayout aboutPanelLayout = new javax.swing.GroupLayout(aboutPanel);
         aboutPanel.setLayout(aboutPanelLayout);
@@ -433,24 +454,33 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
             .addGroup(aboutPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(aboutPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel12)
-                    .addComponent(jLabel13)
-                    .addComponent(jLabel14))
-                .addContainerGap(99, Short.MAX_VALUE))
+                    .addComponent(AuthorLabel)
+                    .addComponent(courseLabel)
+                    .addComponent(labIdLabel))
+                .addContainerGap(186, Short.MAX_VALUE))
         );
         aboutPanelLayout.setVerticalGroup(
             aboutPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(aboutPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel12)
+                .addComponent(AuthorLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel13)
+                .addComponent(courseLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel14)
-                .addContainerGap(438, Short.MAX_VALUE))
+                .addComponent(labIdLabel)
+                .addContainerGap(403, Short.MAX_VALUE))
         );
 
         MainTabbedPane.addTab("About", aboutPanel);
+
+        lowerCaseCheckBox.setSelected(true);
+        lowerCaseCheckBox.setText("lower case the tokens");
+
+        ignorePunctCheckBox.setSelected(true);
+        ignorePunctCheckBox.setText("ignore punctuations");
+
+        ignoreStopCheckBox.setSelected(true);
+        ignoreStopCheckBox.setText("ignore stopwords");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -459,12 +489,18 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(MainTabbedPane)
+                    .addComponent(MainTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(corpusFileBrowseButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(corpusFileTextField)
+                        .addComponent(corpusFileTextField))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lowerCaseCheckBox)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(ignorePunctCheckBox)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(ignoreStopCheckBox)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(indexFileButton)))
                 .addContainerGap())
         );
@@ -474,7 +510,12 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(corpusFileBrowseButton)
-                    .addComponent(corpusFileTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(corpusFileTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lowerCaseCheckBox)
+                    .addComponent(ignorePunctCheckBox)
+                    .addComponent(ignoreStopCheckBox)
                     .addComponent(indexFileButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(MainTabbedPane)
@@ -485,21 +526,23 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void indexFileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_indexFileButtonActionPerformed
-        //readTheFile("/media/shadiq/Dokumen/2016_spring/information_retrieval/class-project/InfRetLab1/movies.txt");
-        readTheFile(corpusFileTextField.getText());        
+        boolean isLowerCased = lowerCaseCheckBox.isSelected();
+        boolean ignoreStopWords = ignoreStopCheckBox.isSelected();
+        boolean ignorePuctuations = ignorePunctCheckBox.isSelected();
+        indexTheFile(corpusFileTextField.getText(), isLowerCased, ignoreStopWords, ignorePuctuations);        
         updateTokenStatDisplay();
     }//GEN-LAST:event_indexFileButtonActionPerformed
 
     private void booleanSearchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_booleanSearchButtonActionPerformed
         if(invertedIndex != null){
-            Set<Integer> resultSet = booleanSearchDocuments(booleanQueriesTextField.getText(), jCheckBox1.isSelected(), jLabel7);
+            Set<Integer> resultSet = booleanSearchDocuments(booleanQueriesTextField.getText(), optimizeQueryBooleanCheckBox.isSelected(), bQueryCompNum);
             updateBooleanQueriesResultTable(resultSet);
         }
     }//GEN-LAST:event_booleanSearchButtonActionPerformed
 
     private void weightedSearchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_weightedSearchButtonActionPerformed
         if(invertedIndex != null){
-            Map<Integer, Double> resultMap = weightedSearchDocuments(weightedQueryTextField.getText().toLowerCase(), jCheckBox2.isSelected(), jLabel11);
+            Map<Integer, Double> resultMap = weightedSearchDocuments(weightedQueryTextField.getText().toLowerCase(), optimizeQueryWeightedCheckBox.isSelected(), wQueryCompNum);
             updateWeigtedQueriesResultTable(resultMap);
         }
     }//GEN-LAST:event_weightedSearchButtonActionPerformed
@@ -548,8 +591,8 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
         });
     }
     
-    private void readTheFile(String fileString) {
-        // Reset!
+    private void indexTheFile(String fileString, boolean isLowerCased, boolean ignoreStopWords, boolean ignorePuctuations) {
+        // Reset local variable!
         invertedIndex = new HashMap<>();
         tokenFreq = new HashMap<>();
         documents = new HashMap<>();
@@ -566,9 +609,9 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
             String line = null;
             while ((line = br.readLine()) != null) {
                 
-                // to lower case and tokenize
-                line = line.toLowerCase();
-                String[] tokens = line.split(" ");
+                if(isLowerCased) line = line.toLowerCase(); // to lower case
+                String[] tokens = line.split(" "); // tokenize
+                if(ignoreStopWords | ignorePuctuations) tokens = filterTokens(tokens, ignoreStopWords, ignorePuctuations);
                 
                 // for counting & Document ID purpose
                 lineCounter ++;
@@ -594,6 +637,17 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
         }
     }
 
+    private static String[] filterTokens(String[] tokens, boolean ignoreStopWords, boolean ignorePuctuations){
+        ArrayList<String> tokenList = new ArrayList<>(Arrays.asList(tokens));
+        Set<String> filterSet = new HashSet<>();
+        if(ignorePuctuations) filterSet.addAll(PunctuationsSet);
+        if(ignoreStopWords) filterSet.addAll(StopWordsSet);
+        
+        tokenList.removeAll(filterSet);
+        
+        return tokenList.toArray(new String[0]);
+    }
+    
     private static Document createDocument(String docContent, String[] tokens, int docId){
         Document d = new Document();
         d.setDocId(docId);
@@ -702,15 +756,11 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
     }
 
     
-    
-    
     private static Set<Integer> booleanSearchDocuments(String query, boolean isOptimize, javax.swing.JLabel numOfComparisonLabel){
         String[] queryTokens;
-        if(isOptimize){
-            queryTokens = optimizeQueryOrder(query);
-        } else {
-            queryTokens = query.split(" ");
-        }
+        
+        if(isOptimize) queryTokens = optimizeQueryOrder(query);
+        else queryTokens = query.split(" ");
         
         int numOfComp = 0;
         Set s1 = null;
@@ -721,8 +771,12 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
                 s1 = invertedIndex.get(qTok);
                 firstEntry = false;
             }
-            numOfComp += s1.size();
-            s1 = intersection(s1, invertedIndex.get(qTok));
+            
+            if(!(s1 == null || s1.isEmpty())){ // if we could find the token in the index
+                numOfComp += s1.size();
+                s1 = intersection(s1, invertedIndex.get(qTok));
+            } else 
+                return null; // since we use boolean query, if there's some token that does not available on any document, just simply return null
         }
         
         numOfComparisonLabel.setText(String.valueOf(numOfComp));
@@ -735,9 +789,8 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
         Map<String, Integer> unsortedMap = new HashMap<>();
         
         // get each individual query token number of documents result
-        for (String qTok : queryTokens) {
+        for (String qTok : queryTokens) 
             unsortedMap.put(qTok, invertedIndex.get(qTok).size());
-        }
         
         // sort it by the number of document result
         Map<String, Integer> sortedMap = sortByComparator(unsortedMap);
@@ -770,12 +823,15 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
     private void updateBooleanQueriesResultTable(Set<Integer> resultSet){
         DefaultTableModel dtm = (DefaultTableModel)booleanQueryResultTable.getModel();
         dtm.getDataVector().removeAllElements();
+        bQueryResultNum.setText("0");
         
-        resultSet.stream().forEach((docID) -> {
-            dtm.addRow(new Object[] {docID, documents.get(docID).getDocContent()});
-        });
-        
-        jLabel5.setText(String.valueOf(resultSet.size()));
+        if(resultSet != null){
+            resultSet.stream().forEach((docID) -> {
+                dtm.addRow(new Object[] {docID, documents.get(docID).getDocContent()});
+            });
+
+            bQueryResultNum.setText(String.valueOf(resultSet.size()));
+        }
     }
 
     private static Map<Integer, Double> weightedSearchDocuments(String query, boolean isOptimize, javax.swing.JLabel numOfComparisonLabel){
@@ -796,8 +852,13 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
                 s1 = invertedIndex.get(qTok);
                 firstEntry = false;
             }
-            numOfComp += s1.size();
-            s1 = intersection(s1, invertedIndex.get(qTok));
+            
+            if (!(s1 == null || s1.isEmpty())) { // if we could find the token in the index
+                numOfComp += s1.size();
+                s1 = intersection(s1, invertedIndex.get(qTok));
+            } else 
+                return null; // since we use boolean query, if there's some token that does not available on any document, just simply return null
+            
         }
         
         numOfComparisonLabel.setText(String.valueOf(numOfComp));
@@ -874,7 +935,7 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
             i++;
         }
         
-        jLabel9.setText(String.valueOf(resultMap.size()));
+        wQueryResultNum.setText(String.valueOf(resultMap.size()));
     }
     
     
@@ -895,44 +956,60 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
         }
     }
     
+    public final static String[] symbols = {
+        "\'", "-", ".", "@", "#",
+        "!", "\"", "$", "%", "&",
+        "(", ")", "*", "+", ",",
+        "/", ":", ";", "<", "=",
+        ">", "?", "[", "\\", "]",
+        "^", "_", "`", "{", "|",
+        "}", "~", "—"
+    };
+    public static final Set<String> PunctuationsSet = new HashSet<String>(Arrays.asList(symbols));
+    public static final String StopWords = "you i the to s a it t and i'";
+    public static final Set<String> StopWordsSet = new HashSet<String>(Arrays.asList(StopWords.split(" ")));
+    
     private JFileChooser chooser = new JFileChooser();
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel AuthorLabel;
     private javax.swing.JTabbedPane MainTabbedPane;
     private javax.swing.JPanel TokenStatPanel;
     private javax.swing.JPanel aboutPanel;
+    private javax.swing.JLabel bQueryCompLabel;
+    private javax.swing.JLabel bQueryCompNum;
+    private javax.swing.JLabel bQueryResultLabel;
+    private javax.swing.JLabel bQueryResultNum;
     private javax.swing.JTextField booleanQueriesTextField;
     private javax.swing.JPanel booleanQueryPanel;
     private javax.swing.JTable booleanQueryResultTable;
+    private javax.swing.JScrollPane booleanQueryScrollPane;
     private javax.swing.JButton booleanSearchButton;
     private javax.swing.JButton corpusFileBrowseButton;
     private javax.swing.JTextField corpusFileTextField;
+    private javax.swing.JLabel courseLabel;
+    private javax.swing.JCheckBox ignorePunctCheckBox;
+    private javax.swing.JCheckBox ignoreStopCheckBox;
     private javax.swing.JButton indexFileButton;
-    private javax.swing.JCheckBox jCheckBox1;
-    private javax.swing.JCheckBox jCheckBox2;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JLabel labIdLabel;
+    private javax.swing.JCheckBox lowerCaseCheckBox;
     private javax.swing.JLabel numOfDocStaticLabel;
     private javax.swing.JLabel numOfDocsLabel;
     private javax.swing.JLabel numOfTokStaticLabel;
     private javax.swing.JLabel numOfTokensLabel;
     private javax.swing.JLabel numOfUniqTokStaticLabel;
     private javax.swing.JLabel numOfUniqTokensLabel;
+    private javax.swing.JCheckBox optimizeQueryBooleanCheckBox;
+    private javax.swing.JCheckBox optimizeQueryWeightedCheckBox;
     private javax.swing.JTable tokenStatTable;
+    private javax.swing.JLabel wQueryCompLabel;
+    private javax.swing.JLabel wQueryCompNum;
+    private javax.swing.JLabel wQueryResultLabel;
+    private javax.swing.JLabel wQueryResultNum;
     private javax.swing.JPanel weightedQueryPanel;
     private javax.swing.JTable weightedQueryResultTable;
+    private javax.swing.JScrollPane weightedQueryScrollPane;
     private javax.swing.JTextField weightedQueryTextField;
     private javax.swing.JButton weightedSearchButton;
     // End of variables declaration//GEN-END:variables
