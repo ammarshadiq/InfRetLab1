@@ -36,13 +36,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.List;
-import javax.swing.RowSorter;
-import javax.swing.SortOrder;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
-import javax.swing.event.RowSorterEvent;
-import javax.swing.event.RowSorterListener;
 import javax.swing.JFileChooser;
 
 /**
@@ -159,26 +153,6 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
                 return types [columnIndex];
             }
         });
-        TableRowSorter<TableModel> sorter = new TableRowSorter<>(tokenStatTable.getModel());
-        sorter.setSortable(0, false);
-        sorter.addRowSorterListener(new RowSorterListener() {
-            @Override
-            public void sorterChanged(RowSorterEvent evt) {
-                int indexOfNoColumn = 0;
-                for (int i = 0; i < tokenStatTable.getRowCount(); i++) {
-                    tokenStatTable.setValueAt(i + 1, i, indexOfNoColumn);
-                }
-            }
-        });
-
-        //jTable1.setRowSorter(sorter);
-        //List<RowSorter.SortKey> sortKeys = new ArrayList<>();
-        //
-        //int columnIndexToSort = 2;
-        //sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.DESCENDING));
-        //
-        //sorter.setSortKeys(sortKeys);
-        //sorter.sort();
         jScrollPane1.setViewportView(tokenStatTable);
         if (tokenStatTable.getColumnModel().getColumnCount() > 0) {
             tokenStatTable.getColumnModel().getColumn(0).setPreferredWidth(4);
@@ -364,25 +338,6 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        TableRowSorter<TableModel> table3Sorter = new TableRowSorter<>(weightedQueryResultTable.getModel());
-        table3Sorter.setSortable(0, false);
-        table3Sorter.addRowSorterListener(new RowSorterListener() {
-            @Override
-            public void sorterChanged(RowSorterEvent evt) {
-                int indexOfNoColumn = 0;
-                for (int i = 0; i < weightedQueryResultTable.getRowCount(); i++) {
-                    weightedQueryResultTable.setValueAt(i + 1, i, indexOfNoColumn);
-                }
-            }
-        });
-
-        weightedQueryResultTable.setRowSorter(table3Sorter);
-        List<RowSorter.SortKey> table3SortKeys = new ArrayList<>();
-
-        table3SortKeys.add(new RowSorter.SortKey(3, SortOrder.DESCENDING));
-
-        table3Sorter.setSortKeys(table3SortKeys);
-        table3Sorter.sort();
         weightedQueryScrollPane.setViewportView(weightedQueryResultTable);
         if (weightedQueryResultTable.getColumnModel().getColumnCount() > 0) {
             weightedQueryResultTable.getColumnModel().getColumn(0).setMinWidth(10);
@@ -544,15 +499,17 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
     }//GEN-LAST:event_indexFileButtonActionPerformed
 
     private void booleanSearchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_booleanSearchButtonActionPerformed
-        if(invertedIndex != null){
-            Set<Integer> resultSet = booleanSearchDocuments(booleanQueriesTextField.getText(), optimizeQueryBooleanCheckBox.isSelected(), bQueryCompNum);
+        String query = booleanQueriesTextField.getText().toLowerCase();
+        if(invertedIndex != null && !query.isEmpty()){
+            Set<Integer> resultSet = booleanSearchDocuments(query, optimizeQueryBooleanCheckBox.isSelected(), bQueryCompNum);
             updateBooleanQueriesResultTable(resultSet);
         }
     }//GEN-LAST:event_booleanSearchButtonActionPerformed
 
     private void weightedSearchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_weightedSearchButtonActionPerformed
-        if(invertedIndex != null){
-            Map<Integer, Double> resultMap = weightedSearchDocuments(weightedQueryTextField.getText().toLowerCase(), optimizeQueryWeightedCheckBox.isSelected(), wQueryCompNum);
+        String query = weightedQueryTextField.getText().toLowerCase();
+        if(invertedIndex != null && !query.isEmpty()){
+            Map<Integer, Double> resultMap = weightedSearchDocuments(query, optimizeQueryWeightedCheckBox.isSelected(), wQueryCompNum);
             updateWeigtedQueriesResultTable(resultMap);
         }
     }//GEN-LAST:event_weightedSearchButtonActionPerformed
@@ -750,13 +707,15 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
         /* UPDATE THE TOKEN FREQUENCIES TABLE */
         int i = 0;
         
+        tokenStatTable.setRowSorter(null); // remove the sorting
         DefaultTableModel dtm = (DefaultTableModel)tokenStatTable.getModel();
         dtm.getDataVector().removeAllElements();
         
         for(String token : invertedIndex.keySet()){
            dtm.addRow(new Object[] { i+1,token,tokenFreq.get(token), invertedIndex.get(token).size() });
             i++;
-        }        
+        }
+        tokenStatTable.setAutoCreateRowSorter(true);
     }
     
     /**
@@ -831,6 +790,7 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
      * @param resultSet a set of document ID from the query result 
      */
     private void updateBooleanQueriesResultTable(Set<Integer> resultSet){
+        booleanQueryResultTable.setRowSorter(null); // remove jTable sorting
         DefaultTableModel dtm = (DefaultTableModel)booleanQueryResultTable.getModel();
         dtm.getDataVector().removeAllElements();
         bQueryResultNum.setText("0");
@@ -842,6 +802,7 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
 
             bQueryResultNum.setText(String.valueOf(resultSet.size()));
         }
+        booleanQueryResultTable.setAutoCreateRowSorter(true); // add jTable sorting capability
     }
 
     /**
@@ -952,14 +913,17 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
      * @param resultMap a Map containing the Document ID and the Weight Value of the document
      */
     private void updateWeigtedQueriesResultTable(Map<Integer, Double> resultMap){
+        weightedQueryResultTable.setRowSorter(null); // remove jTable sorting
         DefaultTableModel dtm = (DefaultTableModel)weightedQueryResultTable.getModel();
         dtm.getDataVector().removeAllElements();
         
         int i = 0;
+        resultMap = sortByComparator2(resultMap);// sort result by weight
         for (Integer docID : resultMap.keySet()) {
             dtm.addRow(new Object[] {i+1,docID, documents.get(docID).getDocContent(), resultMap.get(docID)});
             i++;
         }
+        weightedQueryResultTable.setAutoCreateRowSorter(true); // add jTable sorting capability
         
         wQueryResultNum.setText(String.valueOf(resultMap.size()));
     }
@@ -1021,6 +985,32 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
         Map<String, Integer> sortedMap = new LinkedHashMap<String, Integer>();
         for (Iterator<Map.Entry<String, Integer>> it = list.iterator(); it.hasNext();) {
             Map.Entry<String, Integer> entry = it.next();
+            sortedMap.put(entry.getKey(), entry.getValue());
+        }
+        return sortedMap;
+    }
+    
+    /**
+     * Helper function to sort a map Object
+     * @param unsortMap
+     * @return 
+     */
+    private static Map<Integer, Double> sortByComparator2(Map<Integer, Double> unsortMap) {
+
+        // Convert Map to List
+        List<Map.Entry<Integer, Double>> list = new LinkedList<>(unsortMap.entrySet());
+
+        // Sort list with comparator, to compare the Map values
+        Collections.sort(list, new Comparator<Map.Entry<Integer, Double>>() {
+            public int compare(Map.Entry<Integer, Double> o1, Map.Entry<Integer, Double> o2) {
+                return (o2.getValue()).compareTo(o1.getValue());
+            }
+        });
+
+        // Convert sorted map back to a Map
+        Map<Integer, Double> sortedMap = new LinkedHashMap<>();
+        for (Iterator<Map.Entry<Integer, Double>> it = list.iterator(); it.hasNext();) {
+            Map.Entry<Integer, Double> entry = it.next();
             sortedMap.put(entry.getKey(), entry.getValue());
         }
         return sortedMap;
