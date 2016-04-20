@@ -105,8 +105,8 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
         courseLabel = new javax.swing.JLabel();
         labIdLabel = new javax.swing.JLabel();
         lowerCaseCheckBox = new javax.swing.JCheckBox();
-        ignorePunctCheckBox = new javax.swing.JCheckBox();
-        ignoreStopCheckBox = new javax.swing.JCheckBox();
+        filterPunctCheckBox = new javax.swing.JCheckBox();
+        filterStopCheckBox = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("IR Lab 1 - Uppsala Univ");
@@ -232,6 +232,11 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
         MainTabbedPane.addTab("Tokens Stat", TokenStatPanel);
 
         booleanQueriesTextField.setText("really kids school");
+        booleanQueriesTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                booleanQueriesTextFieldActionPerformed(evt);
+            }
+        });
 
         booleanSearchButton.setText("Search!");
         booleanSearchButton.addActionListener(new java.awt.event.ActionListener() {
@@ -321,6 +326,11 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
         MainTabbedPane.addTab("Boolean Queries", booleanQueryPanel);
 
         weightedQueryTextField.setText("really kids school");
+        weightedQueryTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                weightedQueryTextFieldActionPerformed(evt);
+            }
+        });
 
         weightedSearchButton.setText("Search!");
         weightedSearchButton.addActionListener(new java.awt.event.ActionListener() {
@@ -476,11 +486,11 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
         lowerCaseCheckBox.setSelected(true);
         lowerCaseCheckBox.setText("lower case the tokens");
 
-        ignorePunctCheckBox.setSelected(true);
-        ignorePunctCheckBox.setText("ignore punctuations");
+        filterPunctCheckBox.setSelected(true);
+        filterPunctCheckBox.setText("filter punctuations");
 
-        ignoreStopCheckBox.setSelected(true);
-        ignoreStopCheckBox.setText("ignore stopwords");
+        filterStopCheckBox.setSelected(true);
+        filterStopCheckBox.setText("filter stopwords");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -497,9 +507,9 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(lowerCaseCheckBox)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(ignorePunctCheckBox)
+                        .addComponent(filterPunctCheckBox)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(ignoreStopCheckBox)
+                        .addComponent(filterStopCheckBox)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(indexFileButton)))
                 .addContainerGap())
@@ -514,8 +524,8 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lowerCaseCheckBox)
-                    .addComponent(ignorePunctCheckBox)
-                    .addComponent(ignoreStopCheckBox)
+                    .addComponent(filterPunctCheckBox)
+                    .addComponent(filterStopCheckBox)
                     .addComponent(indexFileButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(MainTabbedPane)
@@ -527,8 +537,8 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
 
     private void indexFileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_indexFileButtonActionPerformed
         boolean isLowerCased = lowerCaseCheckBox.isSelected();
-        boolean ignoreStopWords = ignoreStopCheckBox.isSelected();
-        boolean ignorePuctuations = ignorePunctCheckBox.isSelected();
+        boolean ignoreStopWords = filterStopCheckBox.isSelected();
+        boolean ignorePuctuations = filterPunctCheckBox.isSelected();
         indexTheFile(corpusFileTextField.getText(), isLowerCased, ignoreStopWords, ignorePuctuations);        
         updateTokenStatDisplay();
     }//GEN-LAST:event_indexFileButtonActionPerformed
@@ -555,6 +565,14 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
         }
         corpusFileTextField.setText(FILECHOOSER.getSelectedFile().getAbsolutePath());
     }//GEN-LAST:event_corpusFileBrowseButtonActionPerformed
+
+    private void booleanQueriesTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_booleanQueriesTextFieldActionPerformed
+        booleanSearchButtonActionPerformed(evt);
+    }//GEN-LAST:event_booleanQueriesTextFieldActionPerformed
+
+    private void weightedQueryTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_weightedQueryTextFieldActionPerformed
+        weightedSearchButtonActionPerformed(evt);
+    }//GEN-LAST:event_weightedQueryTextFieldActionPerformed
 
     /**
      * @param args the command line arguments
@@ -795,12 +813,11 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
             if(firstEntry){
                 s1 = invertedIndex.get(qTok);
                 firstEntry = false;
-            }
+            } else numOfComp += s1.size();
             
-            if(!(s1 == null || s1.isEmpty())){ // if we could find the token in the index
-                numOfComp += s1.size();
+            if(!(s1 == null || s1.isEmpty())) // if we could find the token in the index
                 s1 = intersection(s1, invertedIndex.get(qTok));
-            } else 
+            else 
                 return null; // since we use boolean query, if there's some token that does not available on any document, just simply return null
         }
         
@@ -851,12 +868,11 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
             if(firstEntry){
                 s1 = invertedIndex.get(qTok);
                 firstEntry = false;
-            }
+            }  else numOfComp += s1.size();
             
-            if (!(s1 == null || s1.isEmpty())) { // if we could find the token in the index
-                numOfComp += s1.size();
+            if (!(s1 == null || s1.isEmpty())) // if we could find the token in the index
                 s1 = intersection(s1, invertedIndex.get(qTok));
-            } else 
+            else 
                 return null; // since we use boolean query, if there's some token that does not available on any document, just simply return null
             
         }
@@ -1077,8 +1093,8 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
     private javax.swing.JButton corpusFileBrowseButton;
     private javax.swing.JTextField corpusFileTextField;
     private javax.swing.JLabel courseLabel;
-    private javax.swing.JCheckBox ignorePunctCheckBox;
-    private javax.swing.JCheckBox ignoreStopCheckBox;
+    private javax.swing.JCheckBox filterPunctCheckBox;
+    private javax.swing.JCheckBox filterStopCheckBox;
     private javax.swing.JButton indexFileButton;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel labIdLabel;

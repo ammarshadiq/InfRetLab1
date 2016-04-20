@@ -36,9 +36,9 @@
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="lowerCaseCheckBox" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="ignorePunctCheckBox" min="-2" max="-2" attributes="0"/>
+                      <Component id="filterPunctCheckBox" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="ignoreStopCheckBox" min="-2" max="-2" attributes="0"/>
+                      <Component id="filterStopCheckBox" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
                       <Component id="indexFileButton" min="-2" max="-2" attributes="0"/>
                   </Group>
@@ -58,8 +58,8 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="lowerCaseCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="ignorePunctCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="ignoreStopCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="filterPunctCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="filterStopCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="indexFileButton" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -311,6 +311,9 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="really kids school"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="booleanQueriesTextFieldActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JButton" name="booleanSearchButton">
               <Properties>
@@ -452,6 +455,9 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="really kids school"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="weightedQueryTextFieldActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JButton" name="weightedSearchButton">
               <Properties>
@@ -600,16 +606,16 @@
         <Property name="text" type="java.lang.String" value="lower case the tokens"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JCheckBox" name="ignorePunctCheckBox">
+    <Component class="javax.swing.JCheckBox" name="filterPunctCheckBox">
       <Properties>
         <Property name="selected" type="boolean" value="true"/>
-        <Property name="text" type="java.lang.String" value="ignore punctuations"/>
+        <Property name="text" type="java.lang.String" value="filter punctuations"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JCheckBox" name="ignoreStopCheckBox">
+    <Component class="javax.swing.JCheckBox" name="filterStopCheckBox">
       <Properties>
         <Property name="selected" type="boolean" value="true"/>
-        <Property name="text" type="java.lang.String" value="ignore stopwords"/>
+        <Property name="text" type="java.lang.String" value="filter stopwords"/>
       </Properties>
     </Component>
   </SubComponents>
