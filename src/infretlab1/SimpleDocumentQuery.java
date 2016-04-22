@@ -682,7 +682,17 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
             // iterate through all the terms/tokens in the document
             for (String term : docTfMap.keySet()) {
                 double tf = 1d + Math.log(docTfMap.get(term));
-                double tfidf = (tf * (Math.log(documents.size() / invertedIndex.get(term).size())));
+                double tfidf = (tf * (Math.log(documents.size()+1 / invertedIndex.get(term).size())));
+                
+                if((doc.getDocId() == 385 || 
+                   doc.getDocId() == 72 || 
+                   doc.getDocId() == 224) && 
+                   (term.matches("school") ||
+                    term.matches("kids") ||
+                    term.matches("really"))
+                ){
+                    System.out.println("docID: "+doc.getDocId()+" token: "+term+" raw tf: "+docTfMap.get(term)+" tf: "+tf + " docSize: "+documents.size()+" docFreq: "+invertedIndex.get(term).size()+" idf: "+(Math.log(documents.size() / invertedIndex.get(term).size()))+" tf-idf: "+tfidf);
+                }
                 
                 // put the tf-idf value to the document object
                 doc.getTfidfMap().put(term, tfidf);
@@ -873,14 +883,15 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
         
         for (String queryToken : queryTFMap.keySet()) {
             double tf = 1d + Math.log(queryTFMap.get(queryToken));
-            double tfidf = (tf * (Math.log(documents.size()+1 / invertedIndex.get(queryToken).size()+1)));
+            //double tfidf = (tf * (Math.log(documents.size()+1 / invertedIndex.get(queryToken).size()+1)));
+            double tfidf = (tf);
 
             queryTfidfMap.put(queryToken, tfidf);//put the tf-idf value to the document object
             queryNorm += Math.pow(tfidf, 2d);//also calculate the document normalization value for cosine similarity
         }
         // document norm  (vector length or L2 norm) || d ||
         queryNorm = Math.sqrt(queryNorm); // == square root (sigma(tfidf^2))
-        
+        System.out.println(queryTfidfMap.toString());
         return new QueryDoc(queryNorm, queryTfidfMap);
     }
     
@@ -898,10 +909,16 @@ public class SimpleDocumentQuery extends javax.swing.JFrame {
         for(String queryToken : queryDoc.queryTfidfMap.keySet()){
             double doc1TfIdfWeight = (queryDoc.queryTfidfMap.get(queryToken));
             
+            
+            
             if(doc.getTfidfMap().get(queryToken) != null){
                 double doc2TfIdfWeight = doc.getTfidfMap().get(queryToken);
+                System.out.println("docID: "+doc.getDocId()+" token: "+queryToken+" docTFIDF: "+doc2TfIdfWeight);
+//                similiarity += ((doc1TfIdfWeight/queryDoc.queryNormalization)*
+//                        (doc2TfIdfWeight/doc.getDocNormalizer()));
                 similiarity += ((doc1TfIdfWeight/queryDoc.queryNormalization)*
-                        (doc2TfIdfWeight/doc.getDocNormalizer()));
+                        (doc2TfIdfWeight));
+                
             }
         }
         
